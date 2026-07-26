@@ -1,4 +1,5 @@
 require('dotenv').config();
+const http = require('http');
 const { Telegraf } = require('telegraf');
 const axios = require('axios');
 
@@ -120,6 +121,14 @@ bot.on('message', async (ctx) => {
 
 bot.launch();
 console.log('Bypass bot is running.');
+
+// Railway only marks a service healthy/reachable if something answers on $PORT.
+// The bot itself uses long-polling and needs no HTTP server, so this exists
+// purely to satisfy Railway's health check / public networking and avoid 521s.
+const PORT = process.env.PORT || 3000;
+http
+  .createServer((req, res) => res.writeHead(200).end('OK'))
+  .listen(PORT, () => console.log(`Health check server listening on port ${PORT}`));
 
 process.once('SIGINT',  () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

@@ -1,0 +1,14 @@
+{
+  "name": "bypassbotdd",
+  "version": "1.0.0",
+  "description": "Telegram bot that bypasses URLs and reposts to a channel",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "telegraf": "^4.16.3"
+  }
+}
