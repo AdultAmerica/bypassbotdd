@@ -191,7 +191,15 @@ bot.on('message', async (ctx) => {
   processQueue();
 });
 
-bot.launch();
+// Telegram allows only one long-polling connection per bot token, so an
+// overlapping instance (e.g. the old and new containers during a Railway
+// redeploy) makes launch() reject with a 409 Conflict. Without this catch
+// that rejection is unhandled and crashes the process; catching it lets
+// Railway's restart policy recover cleanly once the old instance is gone.
+bot.launch().catch((err) => {
+  console.error('Bot failed to launch:', err.message || err);
+  process.exit(1);
+});
 console.log(`🚀 Premier Asynchronous Bypass bot is running with ${CONCURRENCY_LIMIT} max workers.`);
 
 // Railway only marks a service healthy/reachable if something answers on $PORT.
